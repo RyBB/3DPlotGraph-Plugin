@@ -1,0 +1,35 @@
+{
+  "manifest_version": 1,
+  "version": 1,
+  "type": "APP",
+  "desktop": {
+    "js": [
+      "js/desktop.js"
+    ],
+    "css": [
+    ]
+  },
+  "icon": "image/icon.png",
+  "config": {
+    "html": "html/config.html",
+    "js": [
+      "https://js.cybozu.com/jquery/3.4.0/jquery.min.js",
+      "base/js/kintone-config-helper.js",
+      "base/js/kintone-ui-component.min.js",
+      "js/config.js"
+    ],
+    "css": [
+      "base/css/51-modern-default.css",
+      "base/css/kintone-ui-component.min.css",
+      "css/config.css"
+    ]
+  },
+  "name": {
+    "en": "3D Plot Graph",
+    "ja": "3Dプロット図プラグイン"
+  },
+  "description": {
+    "en": "This create 3d plot graph in customize view.",
+    "ja": "カスタマイズビューに3Dプロット図を作成します。"
+  }
+}
