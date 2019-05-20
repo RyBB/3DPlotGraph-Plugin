@@ -17,6 +17,10 @@ table {
 td {
   padding: 0 10px 0 0;
 }
+.bold {
+  font-weight: bold;
+  color: rgba(212, 16, 16, 0.87);
+}
 .kuc-dropdown {
   position: relative;
   display: inline-block;

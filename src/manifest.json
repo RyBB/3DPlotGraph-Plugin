@@ -4,6 +4,7 @@
   "type": "APP",
   "desktop": {
     "js": [
+      "https://cdn.plot.ly/plotly-latest.min.js",
       "js/desktop.js"
     ],
     "css": [
