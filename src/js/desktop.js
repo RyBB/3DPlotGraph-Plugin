@@ -18,18 +18,17 @@
         .catch(err => err);
     },
   };
-  console.log(configData)
 
   kintone.events.on(['app.record.index.show'], event => {
-    if (event.viewId !== Number(configData[0])) return;
+    if (event.viewId !== Number(configData.viewId)) return;
     main.getRecords().then(val => {
       const axis = key => val.records.map(row => row[key].value);
       const myplots = document.getElementById('myDiv'),
         data = [
           {
-            x: axis(configData[5]),
-            y: axis(configData[6]),
-            z: axis(configData[7]),
+            x: axis(configData.xaxis[1]),
+            y: axis(configData.yaxis[1]),
+            z: axis(configData.zaxis[1]),
             $id: axis('$id'),
             mode: 'markers',
             type: 'scatter3d',
@@ -38,31 +37,31 @@
               size: 3,
             },
           },
-          // {
-          //   alphahull: 7,
-          //   opacity: 0.1,
-          //   type: 'mesh3d',
-          //   x: axis('axis_x'),
-          //   y: axis('axis_y'),
-          //   z: axis('axis_z'),
-          // },
+          {
+            alphahull: 7,
+            opacity: 0.1,
+            type: 'mesh3d',
+            x: axis(configData.xaxis[1]),
+            y: axis(configData.yaxis[1]),
+            z: axis(configData.zaxis[1]),
+          },
         ],
         layout = {
           autosize: true,
           height: 800,
           scene: {
             xaxis: {
-              title: configData[2],
+              title: configData.xaxis[0],
               type: 'linear',
               zeroline: false,
             },
             yaxis: {
-              title: configData[3],
+              title: configData.yaxis[0],
               type: 'linear',
               zeroline: false,
             },
             zaxis: {
-              title: configData[4],
+              title: configData.zaxis[0],
               type: 'linear',
               zeroline: false,
             },

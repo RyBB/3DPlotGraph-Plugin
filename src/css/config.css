@@ -21,6 +21,9 @@ td {
   font-weight: bold;
   color: rgba(212, 16, 16, 0.87);
 }
+.require {
+  display: none;
+}
 .kuc-dropdown {
   position: relative;
   display: inline-block;

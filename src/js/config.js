@@ -9,7 +9,7 @@ jQuery.noConflict();
 
   // ダイアログ
   const Dialog = new kintoneUIComponent.Dialog({
-    header: '注意！',
+    header: '注意！！',
     content: '保存せずプラグインの設定画面に戻ってもよろしいでしょうか？',
     isVisible: true,
     showCloseButton: true
@@ -29,7 +29,7 @@ jQuery.noConflict();
 
   // テキストフィールド
   const graphName = new kintoneUIComponent.Text({value: ''});
-  const viewID = new kintoneUIComponent.Text({value: ''});
+  const viewId = new kintoneUIComponent.Text({value: ''});
   const xaxisName = new kintoneUIComponent.Text({value: ''});
   const yaxisName = new kintoneUIComponent.Text({value: ''});
   const zaxisName = new kintoneUIComponent.Text({value: ''});
@@ -39,7 +39,7 @@ jQuery.noConflict();
 
   // 要素のrender
   $('#plugin-config-area-isabled').append(checkbox.render());
-  $('#plugin-config-area-viewID').append(viewID.render());
+  $('#plugin-config-area-viewId').append(viewId.render());
   $('#plugin-config-area-name').append(graphName.render());
   $('#plugin-config-area-xaxis-name').append(xaxisName.render());
   $('#plugin-config-area-yaxis-name').append(yaxisName.render());
@@ -76,19 +76,21 @@ jQuery.noConflict();
       $('#plugin-config-area-zaxis').append(zaxis_dropdown.render());
     })
     .then(() => {
-      // 設定情報の確認
+      // 設定情報の確認 & 値の挿入
       const conf = kintone.plugin.app.getConfig(PLUGIN_ID);
-      if (conf.isabled) {
+      const configData = JSON.parse(conf.data);
+
+      // 必須項目に値が入っていれば設定がすでにある
+      if (configData.viewId) {
         checkbox.setValue(JSON.parse(conf.isabled));
-        let confData = JSON.parse(conf.data)
-        viewID.setValue(confData[0]);
-        graphName.setValue(confData[1]);
-        xaxisName.setValue(confData[2]);
-        yaxisName.setValue(confData[3]);
-        zaxisName.setValue(confData[4]);
-        xaxis_dropdown.setValue(confData[5]);
-        yaxis_dropdown.setValue(confData[6]);
-        zaxis_dropdown.setValue(confData[7]);
+        viewId.setValue(configData.viewId);
+        graphName.setValue(configData.graphName);
+        xaxisName.setValue(configData.xaxis[0]);
+        xaxis_dropdown.setValue(configData.xaxis[1]);
+        yaxisName.setValue(configData.yaxis[0]);
+        yaxis_dropdown.setValue(configData.yaxis[1]);
+        zaxisName.setValue(configData.zaxis[0]);
+        zaxis_dropdown.setValue(configData.zaxis[1]);
       }
     })
     .catch(err => console.log(err));
@@ -96,45 +98,58 @@ jQuery.noConflict();
 
   // 保存ボタン押下時
   $('#submit').on('click', () => {
-    const config = {};
-    config.isabled = JSON.stringify(checkbox.getValue());
+    const isabled = JSON.stringify(checkbox.getValue());
+    const data = {
+      viewId: viewId.getValue(),
+      graphName: graphName.getValue(),
+      xaxis: [
+        xaxisName.getValue(),
+        xaxis_dropdown.getValue(),
+      ],
+      yaxis: [
+        yaxisName.getValue(),
+        yaxis_dropdown.getValue(),
+      ],
+      zaxis: [
+        zaxisName.getValue(),
+        zaxis_dropdown.getValue(),
+      ],
+    };
 
-    const prop = [
-      viewID.getValue(),
-      graphName.getValue(),
-      xaxisName.getValue(),
-      yaxisName.getValue(),
-      zaxisName.getValue(),
-      xaxis_dropdown.getValue(),
-      yaxis_dropdown.getValue(),
-      zaxis_dropdown.getValue(),
-    ];
+    // アラートの要素を隠す
+    $('#plugin-config-area-viewId-require').addClass('require');
+    $('#plugin-config-area-xaxis-require').addClass('require');
+    $('#plugin-config-area-yaxis-require').addClass('require');
+    $('#plugin-config-area-zaxis-require').addClass('require');
+    $('#plugin-config-area-all-require').addClass('require');
 
-    const requireAlert = new kintoneUIComponent.Alert({text: '必須項目が入力されていません', type: 'error'});
-    switch(true) {
-      case !prop[0]:
-        $('#plugin-config-area-viewID-require').append(
-          requireAlert.render()
-        );
-      case !prop[5]:
-        $('#plugin-config-area-xaxis-require').append(
-          requireAlert.render()
-        );
-      case !prop[6]:
-        $('#plugin-config-area-yaxis-require').append(
-          requireAlert.render()
-        );
-      case !prop[7]:
-        $('#plugin-config-area-zaxis-require').append(
-          requireAlert.render()
-        );
+    // 必須項目が空だったらアラート要素を表示する
+    let req = 0;
+    if (!data.viewId) {
+      $('#plugin-config-area-viewId-require').removeClass('require');
+      req++;
     }
-    if (!prop[0]) {
-
-    } else {
-      config.data = JSON.stringify(prop);
-      kintone.plugin.app.setConfig(config);
+    if (!data.xaxis[0] || !data.xaxis[1]) {
+      $('#plugin-config-area-xaxis-require').removeClass('require');
+      req++;
     }
+    if (!data.yaxis[0] || !data.yaxis[1]) {
+      $('#plugin-config-area-yaxis-require').removeClass('require');
+      req++;
+    }
+    if( !data.zaxis[0] || !data.zaxis[1]) {
+      $('#plugin-config-area-zaxis-require').removeClass('require');
+      req++;
+    }
+
+    // 上記がどれかマッチすればエラー
+    if (req) {
+      window.alert('必須項目が入力されていません');
+      return;
+    }
+
+    const config = {isabled, data: JSON.stringify(data)};
+    kintone.plugin.app.setConfig(config);
   });
   // キャンセルボタン押下時
   $('#cancel').on('click', () => {
